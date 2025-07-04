@@ -58,6 +58,7 @@
             width: 350px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
         }
         .dark-mode .tool-card {
             background-color: #004d40;
@@ -78,6 +79,10 @@
         .freshwater-image {
             background-image: linear-gradient(rgba(0, 96, 100, 0.3), rgba(0, 96, 100, 0.3)), 
                               url('https://images.unsplash.com/photo-1564454839434-f3c82dfc2cc7?q=80&w=1335&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+        }
+        .parameters-image {
+            background-image: linear-gradient(rgba(0, 96, 100, 0.3), rgba(0, 96, 100, 0.3)), 
+                              url('https://images.unsplash.com/photo-1586771107445-d3ca888129ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
         }
         .tool-content {
             padding: 20px;
@@ -225,7 +230,7 @@
 
     <div class="container">
         <div class="tools-container">
-            <div class="tool-card">
+            <div class="tool-card" onclick="window.location.href='Marine.html'">
                 <div class="tool-image marine-image"></div>
                 <div class="tool-content">
                     <h2>Marine Water Quality Tool</h2>
@@ -234,7 +239,7 @@
                 </div>
             </div>
 
-            <div class="tool-card">
+            <div class="tool-card" onclick="window.location.href='Freshwater.html'">
                 <div class="tool-image freshwater-image"></div>
                 <div class="tool-content">
                     <h2>Freshwater Quality Tool</h2>
@@ -242,17 +247,16 @@
                     <a href="Freshwater.html" class="launch-btn">Launch Freshwater Tool</a>
                 </div>
             </div>
-        </div>
 
-<!-- Add this with your other tiles in index.html -->
-<div class="tool-card" onclick="window.location.href='Parameters.html'">
-    <div class="tool-icon" style="background-color: #006064;">
-        <i class="fas fa-list-check"></i>
-    </div>
-    <h3>Water Quality Parameters</h3>
-    <p>Comprehensive reference for all measurement parameters</p>
-    <div class="tool-badge">Reference</div>
-</div>
+            <div class="tool-card" onclick="window.location.href='Parameters.html'">
+                <div class="tool-image parameters-image"></div>
+                <div class="tool-content">
+                    <h2>Water Quality Parameters</h2>
+                    <p>Comprehensive reference guide explaining all water quality measurement parameters with detailed explanations and examples for both marine and freshwater environments.</p>
+                    <a href="Parameters.html" class="launch-btn">View Parameters</a>
+                </div>
+            </div>
+        </div>
         
         <div class="features">
             <div class="feature">
