@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Quality Parameters Reference | Australian Water Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #006064;
+            --secondary: #b2ebf2;
+            --dark-bg: #002b36;
+            --dark-secondary: #004d40;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e0f7fa;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        .dark-mode {
+            background-color: var(--dark-bg);
+            color: #e0f7fa;
+        }
+        .header {
+            background: linear-gradient(rgba(0, 96, 100, 0.8), rgba(0, 96, 100, 0.9)), 
+                        url('https://images.unsplash.com/photo-1439405326854-014607f694d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            margin-bottom: 30px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+        }
+        .param-category {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .dark-mode .param-category {
+            background-color: var(--dark-secondary);
+        }
+        .param-card {
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 15px 0;
+            background-color: rgba(178, 235, 242, 0.2);
+            transition: all 0.3s ease;
+        }
+        .dark-mode .param-card {
+            border-left-color: #4dd0e1;
+            background-color: rgba(0, 77, 64, 0.3);
+        }
+        .param-card:hover {
+            transform: translateX(5px);
+        }
+        .param-header {
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        .param-values {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .value-range {
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .ideal { background-color: #4caf50; color: white; }
+        .acceptable { background-color: #ffc107; color: #333; }
+        .poor { background-color: #f44336; color: white; }
+        .horiba-tip {
+            background-color: var(--secondary);
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .dark-mode .horiba-tip {
+            background-color: rgba(77, 208, 225, 0.2);
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary);
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: var(--secondary);
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        .dark-mode .tab {
+            background-color: var(--dark-secondary);
+        }
+        .dark-mode .tab.active {
+            background-color: #4dd0e1;
+            color: var(--dark-bg);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .back-btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 20px 0;
+            transition: background-color 0.3s ease;
+        }
+        .dark-mode .back-btn {
+            background-color: #4dd0e1;
+            color: var(--dark-bg);
+        }
+        .back-btn:hover {
+            background-color: #00838f;
+        }
+        .print-btn {
+            background-color: #607d8b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+        .search-container {
+            margin: 20px 0;
+        }
+        #param-search {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .comparison-mode {
+            display: none;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: var(--secondary);
+            border-radius: 5px;
+        }
+        .dark-mode .comparison-mode {
+            background-color: var(--dark-secondary);
+        }
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .comparison-columns {
+            display: flex;
+            gap: 20px;
+        }
+        .comparison-col {
+            flex: 1;
+        }
+        .protocol-card {
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        .dark-mode .protocol-card {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        .case-study {
+            border-left: 4px solid #ff9800;
+            padding: 10px 15px;
+            margin: 15px 0;
+            background-color: rgba(255, 152, 0, 0.1);
+        }
+        .pitfalls {
+            border-left: 4px solid #9c27b0;
+            padding: 10px 15px;
+            margin: 15px 0;
+            background-color: rgba(156, 39, 176, 0.1);
+        }
+        .glossary-term {
+            border-bottom: 1px dashed #666;
+            cursor: help;
+        }
+        .quick-jump {
+            position: sticky;
+            top: 20px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .dark-mode .quick-jump {
+            background-color: var(--dark-secondary);
+        }
+        .jump-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .jump-link {
+            padding: 5px 10px;
+            background-color: var(--secondary);
+            border-radius: 3px;
+            font-size: 0.9em;
+            text-decoration: none;
+            color: var(--primary);
+        }
+        .dark-mode .jump-link {
+            background-color: rgba(77, 208, 225, 0.3);
+            color: #e0f7fa;
+        }
+        @media print {
+            .no-print { display: none; }
+            body { background-color: white; color: black; }
+            .param-category { box-shadow: none; }
+            .quick-jump { display: none; }
+        }
+        @media (max-width: 768px) {
+            .param-values {
+                grid-template-columns: 1fr;
+            }
+            .comparison-columns {
+                flex-direction: column;
+            }
+            .quick-jump {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-tint"></i> Water Quality Parameters Reference</h1>
+        <p>Comprehensive guide to all measurements used in Australian freshwater and marine monitoring</p>
+    </div>
+
+    <div class="container">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Hub</a>
+        <button class="print-btn no-print" onclick="window.print()"><i class="fas fa-print"></i> Print Guide</button>
+        <button class="print-btn no-print" onclick="toggleComparison()"><i class="fas fa-columns"></i> Comparison Mode</button>
+
+        <div class="search-container no-print">
+            <input type="text" id="param-search" placeholder="Search parameters (e.g. 'pH', 'turbidity')...">
+        </div>
+
+        <div class="comparison-mode no-print">
+            <div class="comparison-header">
+                <h3>Parameter Comparison</h3>
+                <button onclick="toggleComparison()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="comparison-columns">
+                <div class="comparison-col" id="marine-comparison">
+                    <h4><i class="fas fa-water"></i> Marine Values</h4>
+                    <!-- Filled by JavaScript -->
+                </div>
+                <div class="comparison-col" id="freshwater-comparison">
+                    <h4><i class="fas fa-tint"></i> Freshwater Values</h4>
+                    <!-- Filled by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-jump no-print">
+            <h3>Quick Jump</h3>
+            <div class="jump-links">
+                <a href="#physical" class="jump-link"><i class="fas fa-thermometer-half"></i> Physical</a>
+                <a href="#chemical" class="jump-link"><i class="fas fa-flask"></i> Chemical</a>
+                <a href="#biological" class="jump-link"><i class="fas fa-leaf"></i> Biological</a>
+                <a href="#protocols" class="jump-link"><i class="fas fa-clipboard-list"></i> Protocols</a>
+            </div>
+        </div>
+
+        <div class="tabs no-print">
+            <div class="tab active" onclick="showTab('all')">All Parameters</div>
+            <div class="tab" onclick="showTab('physical')">Physical</div>
+            <div class="tab" onclick="showTab('chemical')">Chemical</div>
+            <div class="tab" onclick="showTab('biological')">Biological</div>
+        </div>
+
+        <div id="all" class="tab-content active">
+            <!-- PHYSICAL PARAMETERS -->
+            <div class="param-category" data-category="physical" id="physical">
+                <h2><i class="fas fa-thermometer-half"></i> Physical Parameters</h2>
+                
+                <div class="param-card" data-param="temperature">
+                    <div class="param-header" onclick="toggleParam('temp')">
+                        <h3>Temperature <span class="param-unit">(°C)</span></h3>
+                        <i class="fas fa-chevron-down" id="temp-icon"></i>
+                    </div>
+                    <div id="temp-details" class="param-details">
+                        <p>Measures the thermal energy in water. Affects metabolic rates of aquatic organisms and solubility of gases.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Freshwater Ideal:</strong> 18-22°C (varies by species)
+                            </div>
+                            <div class="value-range ideal">
+                                <strong>Marine Ideal:</strong> 22-26°C (tropical), 14-18°C (temperate)
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Danger Zone:</strong> >30°C or <10°C for most species
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Allow 2 minutes for stabilization. Use the U-50's temperature compensation feature when measuring other parameters.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Rinse probe with sample water</li>
+                                <li>Submerge probe completely in water</li>
+                                <li>Wait for reading to stabilize (2-3 minutes)</li>
+                                <li>Record value when stable</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Taking measurements in direct sunlight</li>
+                                <li>Not allowing enough stabilization time</li>
+                                <li>Measuring near thermal discharges</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>During the 2016 Great Barrier Reef bleaching event, sustained water temperatures of 30-32°C caused widespread coral mortality. Regular monitoring helps identify thermal stress before damage occurs.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="turbidity">
+                    <div class="param-header" onclick="toggleParam('turbidity')">
+                        <h3>Turbidity <span class="param-unit">(NTU)</span></h3>
+                        <i class="fas fa-chevron-down" id="turbidity-icon"></i>
+                    </div>
+                    <div id="turbidity-details" class="param-details">
+                        <p>Measures water clarity by detecting light scattering from suspended particles. Affects light penetration and photosynthesis.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Freshwater Ideal:</strong> <5 NTU
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Acceptable:</strong> 5-20 NTU
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Poor:</strong> >20 NTU (blocks sunlight)
+                            </div>
+                            <div class="value-range ideal">
+                                <strong>Marine Coral Ideal:</strong> <1 NTU
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Clean sensor window before measurement. Avoid air bubbles. For high turbidity (>100 NTU), use dilution method.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Clean sensor window with soft cloth</li>
+                                <li>Rinse with sample water</li>
+                                <li>Submerge sensor and avoid bubbles</li>
+                                <li>Take reading when stable (10-20 sec)</li>
+                                <li>For high turbidity, dilute sample 1:1 with DI water and multiply result by 2</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Scratched or dirty sensor window</li>
+                                <li>Air bubbles on sensor surface</li>
+                                <li>Not accounting for colored water (use transparency tube if needed)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>In the Murray-Darling Basin, turbidity levels often spike after heavy rains due to soil erosion. Monitoring helps track sediment loads that can smother aquatic habitats.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="conductivity">
+                    <div class="param-header" onclick="toggleParam('conductivity')">
+                        <h3>Conductivity <span class="param-unit">(µS/cm or mS/cm)</span></h3>
+                        <i class="fas fa-chevron-down" id="conductivity-icon"></i>
+                    </div>
+                    <div id="conductivity-details" class="param-details">
+                        <p>Measures water's ability to conduct electricity, indicating dissolved ion concentration. Used to estimate salinity and detect pollution.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Freshwater Ideal:</strong> 50-1500 µS/cm (varies by region)
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Freshwater Poor:</strong> >2500 µS/cm (salinity stress)
+                            </div>
+                            <div class="value-range ideal">
+                                <strong>Marine Normal:</strong> ~50 mS/cm (varies with salinity)
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Rinse probe between measurements. Use the appropriate range setting (µS/cm for freshwater, mS/cm for marine).
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Select appropriate range (µS/cm or mS/cm)</li>
+                                <li>Rinse probe with DI water</li>
+                                <li>Submerge probe completely</li>
+                                <li>Wait for reading to stabilize (30-60 sec)</li>
+                                <li>Record value when stable</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Not rinsing between samples (cross-contamination)</li>
+                                <li>Using wrong range setting</li>
+                                <li>Measuring near bottom sediments</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>In Western Australia's wheatbelt regions, rising groundwater has brought salts to the surface, increasing conductivity in freshwater systems. Regular monitoring helps track these changes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="salinity">
+                    <div class="param-header" onclick="toggleParam('salinity')">
+                        <h3>Salinity <span class="param-unit">(ppt)</span></h3>
+                        <i class="fas fa-chevron-down" id="salinity-icon"></i>
+                    </div>
+                    <div id="salinity-details" class="param-details">
+                        <p>Measures total dissolved salts in water. Critical for osmoregulation in marine organisms.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Open Ocean:</strong> 33-37 ppt
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Estuaries:</strong> 0-30 ppt (varies with tide)
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Stressful:</strong> <20 ppt or >40 ppt for most marine species
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Calibrate with standard seawater (35 ppt) monthly. Rinse thoroughly after use in high salinity.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Calibrate with standard solution if needed</li>
+                                <li>Rinse probe with DI water</li>
+                                <li>Submerge probe completely</li>
+                                <li>Wait for reading to stabilize (1-2 minutes)</li>
+                                <li>Record value when stable</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Not accounting for temperature effects</li>
+                                <li>Salt buildup on probe</li>
+                                <li>Measuring in stratified water columns</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>In the Coorong estuary (SA), drought conditions have caused hypersalinity (>100 ppt) events, drastically changing the ecosystem. Monitoring helps manage water releases.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="tds">
+                    <div class="param-header" onclick="toggleParam('tds')">
+                        <h3>Total Dissolved Solids (TDS) <span class="param-unit">(mg/L)</span></h3>
+                        <i class="fas fa-chevron-down" id="tds-icon"></i>
+                    </div>
+                    <div id="tds-details" class="param-details">
+                        <p>Measures all inorganic and organic substances dissolved in water. Correlates with conductivity.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Freshwater Ideal:</strong> <500 mg/L
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Acceptable:</strong> 500-1000 mg/L
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Poor:</strong> >1000 mg/L
+                            </div>
+                            <div class="value-range ideal">
+                                <strong>Marine Normal:</strong> ~35,000 mg/L
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Most Horiba meters calculate TDS from conductivity. For accurate results, set the appropriate conversion factor (usually 0.5-0.7).
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Set correct conversion factor in meter settings</li>
+                                <li>Measure conductivity first</li>
+                                <li>Allow meter to calculate TDS</li>
+                                <li>Record both values</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Using wrong conversion factor</li>
+                                <li>Not distinguishing between TDS and suspended solids</li>
+                                <li>Organic compounds not detected by conductivity</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="specific-gravity">
+                    <div class="param-header" onclick="toggleParam('specific-gravity')">
+                        <h3>Seawater Specific Gravity <span class="param-unit">(unitless)</span></h3>
+                        <i class="fas fa-chevron-down" id="specific-gravity-icon"></i>
+                    </div>
+                    <div id="specific-gravity-details" class="param-details">
+                        <p>Ratio of seawater density to pure water density. Used in marine aquaria and aquaculture.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Natural Seawater:</strong> 1.023-1.028
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Coral Reefs:</strong> 1.025-1.027
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Stressful:</strong> <1.020 or >1.030
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Specific gravity is temperature-dependent. Use temperature compensation or measure at standard temperature (usually 25°C).
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Calibrate refractometer if used</li>
+                                <li>Ensure sample is at standard temperature</li>
+                                <li>Take reading and record temperature</li>
+                                <li>Apply temperature correction if needed</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Not temperature compensating</li>
+                                <li>Bubbles in refractometer sample</li>
+                                <li>Using expired calibration standards</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHEMICAL PARAMETERS -->
+            <div class="param-category" data-category="chemical" id="chemical">
+                <h2><i class="fas fa-flask"></i> Chemical Parameters</h2>
+                
+                <div class="param-card" data-param="ph">
+                    <div class="param-header" onclick="toggleParam('ph')">
+                        <h3>pH Level</h3>
+                        <i class="fas fa-chevron-down" id="ph-icon"></i>
+                    </div>
+                    <div id="ph-details" class="param-details">
+                        <p>Measures acidity/alkalinity on a 0-14 scale. Affects chemical processes and organism health.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Freshwater Ideal:</strong> 6.5-8.0
+                            </div>
+                            <div class="value-range ideal">
+                                <strong>Marine Ideal:</strong> 7.8-8.4
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Danger Zone:</strong> <6.0 or >9.0
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Calibrate with pH 4, 7, and 10 buffers monthly. Rinse electrode with DI water between measurements.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Calibrate meter with fresh buffers</li>
+                                <li>Rinse electrode with DI water</li>
+                                <li>Submerge electrode in sample</li>
+                                <li>Wait for reading to stabilize (1-2 min)</li>
+                                <li>Record value when stable</li>
+                                <li>Rinse and store with storage solution</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Using expired buffer solutions</li>
+                                <li>Dirty or dried out electrode</li>
+                                <li>Not temperature compensating</li>
+                                <li>Measuring in low ionic strength water</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>Acid sulfate soils in coastal NSW can release sulfuric acid when drained, causing pH crashes below 4.0 that kill aquatic life. Monitoring helps identify at-risk areas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="do">
+                    <div class="param-header" onclick="toggleParam('do')">
+                        <h3>Dissolved Oxygen <span class="param-unit">(mg/L)</span></h3>
+                        <i class="fas fa-chevron-down" id="do-icon"></i>
+                    </div>
+                    <div id="do-details" class="param-details">
+                        <p>Oxygen available for aquatic respiration. Critical for fish and invertebrate survival.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Ideal:</strong> >6 mg/L
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Stressful:</strong> 4-6 mg/L
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Lethal:</strong> <2 mg/L
+                            </div>
+                            <div class="value-range">
+                                <strong>% Saturation Ideal:</strong> 80-120%
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Replace DO membrane every 1-2 months. Stir gently during measurement for accurate readings. Store with storage solution.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Check membrane condition</li>
+                                <li>Calibrate to 100% in water-saturated air</li>
+                                <li>Submerge probe in flowing water</li>
+                                <li>Stir gently until reading stabilizes (1-2 min)</li>
+                                <li>Record both mg/L and % saturation</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Damaged or dry membrane</li>
+                                <li>Not stirring during measurement</li>
+                                <li>Measuring in stagnant water</li>
+                                <li>Not temperature compensating</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>In the Hawkesbury-Nepean River, summer algal blooms can cause nighttime oxygen crashes below 2 mg/L, resulting in fish kills. Continuous DO monitoring helps predict these events.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="orp">
+                    <div class="param-header" onclick="toggleParam('orp')">
+                        <h3>Oxidation-Reduction Potential (ORP) <span class="param-unit">(mV)</span></h3>
+                        <i class="fas fa-chevron-down" id="orp-icon"></i>
+                    </div>
+                    <div id="orp-details" class="param-details">
+                        <p>Measures water's ability to oxidize or reduce substances. Indicates chemical and biological activity.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Aerobic:</strong> +100 to +300 mV
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Transitional:</strong> 0 to +100 mV
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Anaerobic:</strong> <0 mV
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Calibrate with ORP standard solution (usually +250 mV) monthly. Rinse probe thoroughly between measurements.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Calibrate with ORP standard</li>
+                                <li>Rinse probe with DI water</li>
+                                <li>Submerge probe in sample</li>
+                                <li>Wait for reading to stabilize (2-3 min)</li>
+                                <li>Record stable value</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Dirty or contaminated probe</li>
+                                <li>Not allowing enough stabilization time</li>
+                                <li>Measuring in low conductivity water</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="ammonia">
+                    <div class="param-header" onclick="toggleParam('ammonia')">
+                        <h3>Ammonia (NH₃) <span class="param-unit">(mg/L)</span></h3>
+                        <i class="fas fa-chevron-down" id="ammonia-icon"></i>
+                    </div>
+                    <div id="ammonia-details" class="param-details">
+                        <p>Toxic nitrogen compound from waste and decomposition. More toxic at higher pH and temperature.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Safe:</strong> <0.1 mg/L
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Alert:</strong> 0.1-0.5 mg/L
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Toxic:</strong> >0.5 mg/L
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Use the ammonia ISE probe for direct measurement. For colorimetric tests, ensure proper reaction time and avoid air bubbles.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>For ISE: calibrate with standards</li>
+                                <li>For colorimetric: add reagents precisely</li>
+                                <li>Wait exact reaction time</li>
+                                <li>Measure in clean cuvette</li>
+                                <li>Record value</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Not accounting for pH/temperature effects</li>
+                                <li>Expired reagents</li>
+                                <li>Incorrect reaction times</li>
+                                <li>Interference from other nitrogen compounds</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>In aquaculture ponds, ammonia spikes often occur after overfeeding. The Northern Territory Barramundi farms use continuous monitoring to prevent losses during warm months when toxicity increases.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="nitrate">
+                    <div class="param-header" onclick="toggleParam('nitrate')">
+                        <h3>Nitrate (NO₃⁻) <span class="param-unit">(mg/L)</span></h3>
+                        <i class="fas fa-chevron-down" id="nitrate-icon"></i>
+                    </div>
+                    <div id="nitrate-details" class="param-details">
+                        <p>Oxidized nitrogen form from ammonia breakdown. Causes eutrophication at high levels.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Natural:</strong> <0.5 mg/L
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Elevated:</strong> 0.5-5 mg/L
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Eutrophic:</strong> >5 mg/L
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Use the nitrate ISE for direct measurement. For colorimetric tests, ensure no air bubbles in cuvette and proper zeroing.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Calibrate with nitrate standards</li>
+                                <li>For colorimetric: add reagents in order</li>
+                                <li>Wait specified reaction time</li>
+                                <li>Measure absorbance at correct wavelength</li>
+                                <li>Record concentration</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Interference from chloride ions</li>
+                                <li>Not filtering turbid samples</li>
+                                <li>Using wrong wavelength</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>In the Great Barrier Reef catchment, sugarcane farming contributes to nitrate levels >10 mg/L in runoff. Monitoring helps target improved farming practices to reduce reef impacts.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="nitrite">
+                    <div class="param-header" onclick="toggleParam('nitrite')">
+                        <h3>Nitrite (NO₂⁻) <span class="param-unit">(mg/L)</span></h3>
+                        <i class="fas fa-chevron-down" id="nitrite-icon"></i>
+                    </div>
+                    <div id="nitrite-details" class="param-details">
+                        <p>Intermediate in nitrogen cycle. Highly toxic to fish even at low concentrations.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Safe:</strong> <0.1 mg/L
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Alert:</strong> 0.1-0.5 mg/L
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Toxic:</strong> >0.5 mg/L
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> Nitrite measurements are sensitive to interference. Use fresh reagents and measure promptly after development.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Use fresh reagents</li>
+                                <li>Follow exact reaction times</li>
+                                <li>Measure absorbance immediately</li>
+                                <li>Compare to standard curve</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Interference from organic matter</li>
+                                <li>Not measuring immediately after development</li>
+                                <li>Using expired reagents</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="param-card" data-param="phosphate">
+                    <div class="param-header" onclick="toggleParam('phosphate')">
+                        <h3>Phosphate (PO₄³⁻) <span class="param-unit">(mg/L)</span></h3>
+                        <i class="fas fa-chevron-down" id="phosphate-icon"></i>
+                    </div>
+                    <div id="phosphate-details" class="param-details">
+                        <p>Key nutrient limiting plant growth. Excess causes algal blooms and eutrophication.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Oligotrophic:</strong> <0.03 mg/L
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Mesotrophic:</strong> 0.03-0.1 mg/L
+                            </div>
+                            <div class="value-range poor">
+                                <strong>Eutrophic:</strong> >0.1 mg/L
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> For low-level phosphate measurements, use the ascorbic acid method and ensure all glassware is acid-washed.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Filter sample if turbid</li>
+                                <li>Add reagents in specified order</li>
+                                <li>Wait exact reaction time</li>
+                                <li>Measure absorbance at 880 nm</li>
+                                <li>Compare to standard curve</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Phosphate contamination from detergents</li>
+                                <li>Not filtering samples</li>
+                                <li>Incorrect reaction times</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>In Sydney's Georges River, stormwater inputs have created phosphate hotspots >0.5 mg/L, triggering cyanobacteria blooms. Monitoring guides remediation efforts.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BIOLOGICAL PARAMETERS -->
+            <div class="param-category" data-category="biological" id="biological">
+                <h2><i class="fas fa-leaf"></i> Biological Parameters</h2>
+                
+                <div class="param-card" data-param="chlorophyll">
+                    <div class="param-header" onclick="toggleParam('chlorophyll')">
+                        <h3>Chlorophyll-a <span class="param-unit">(µg/L)</span></h3>
+                        <i class="fas fa-chevron-down" id="chlorophyll-icon"></i>
+                    </div>
+                    <div id="chlorophyll-details" class="param-details">
+                        <p>Primary photosynthetic pigment in algae. Indicator of algal biomass and productivity.</p>
+                        
+                        <div class="param-values">
+                            <div class="value-range ideal">
+                                <strong>Low Nutrient:</strong> <10 µg/L
+                            </div>
+                            <div class="value-range acceptable">
+                                <strong>Moderate:</strong> 10-30 µg/L
+                            </div>
+                            <div class="value-range poor">
+                                <strong>High Nutrient:</strong> >30 µg/L
+                            </div>
+                        </div>
+                        
+                        <div class="horiba-tip">
+                            <strong><i class="fas fa-info-circle"></i> Horiba Tip:</strong> For in vivo measurement, avoid direct sunlight. For extraction methods, use fresh filters and keep samples dark.
+                        </div>
+                        
+                        <div class="protocol-card">
+                            <h4><i class="fas fa-clipboard-list"></i> Measurement Protocol</h4>
+                            <ol>
+                                <li>Filter known water volume</li>
+                                <li>Extract with acetone (90%)</li>
+                                <li>Centrifuge if needed</li>
+                                <li>Measure fluorescence/absorbance</li>
+                                <li>Calculate from standard curve</li>
+                            </ol>
+                        </div>
+                        
+                        <div class="pitfalls">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls</h4>
+                            <ul>
+                                <li>Pigment degradation in light</li>
+                                <li>Incomplete extraction</li>
+                                <li>Interference from pheophytin</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="case-study">
+                            <h4><i class="fas fa-map-marked-alt"></i> Australian Case Study</h4>
+                            <p>In the Swan-Canning Estuary (WA), chlorophyll-a levels >50 µg/L indicate harmful algal blooms. Continuous fluorometers provide early warning to water managers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEASUREMENT PROTOCOLS -->
+            <div class="param-category" id="protocols">
+                <h2><i class="fas fa-clipboard-list"></i> Standard Measurement Protocols</h2>
+                
+                <div class="param-card">
+                    <h3>Horiba U-50/U-52 Field Measurement Procedure</h3>
+                    <div class="protocol-card">
+                        <h4>Pre-Field Preparation</h4>
+                        <ol>
+                            <li>Charge battery fully</li>
+                            <li>Check sensor membranes (DO, pH)</li>
+                            <li>Prepare calibration standards</li>
+                            <li>Pack cleaning supplies (DI water, tissues)</li>
+                            <li>Check all probes are secure</li>
+                        </ol>
+                        
+                        <h4>On-Site Procedure</h4>
+                        <ol>
+                            <li>Power on meter and allow to stabilize</li>
+                            <li>Rinse all probes with site water</li>
+                            <li>Perform calibrations if needed (pH, DO)</li>
+                            <li>Submerge probes in flowing water</li>
+                            <li>Wait for readings to stabilize</li>
+                            <li>Record all parameters</li>
+                            <li>Rinse probes before next site</li>
+                        </ol>
+                        
+                        <h4>Post-Field Care</h4>
+                        <ol>
+                            <li>Rinse all probes with DI water</li>
+                            <li>Store pH electrode in storage solution</li>
+                            <li>Keep DO membrane moist</li>
+                            <li>Download data promptly</li>
+                            <li>Recharge battery</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="pitfalls">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Common Field Mistakes</h4>
+                        <ul>
+                            <li>Not allowing enough stabilization time</li>
+                            <li>Measuring in stagnant water</li>
+                            <li>Dirty or damaged probes</li>
+                            <li>Not recording site conditions</li>
+                            <li>Improper probe storage</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="physical" class="tab-content">
+            <!-- Physical parameters content (same as in 'all' tab) -->
+        </div>
+
+        <div id="chemical" class="tab-content">
+            <!-- Chemical parameters content (same as in 'all' tab) -->
+        </div>
+
+        <div id="biological" class="tab-content">
+            <!-- Biological parameters content (same as in 'all' tab) -->
+        </div>
+    </div>
+
+    <script>
+        // Toggle parameter details
+        function toggleParam(param) {
+            const details = document.getElementById(`${param}-details`);
+            const icon = document.getElementById(`${param}-icon`);
+            
+            details.style.display = details.style.display === 'none' ? 'block' : 'none';
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+        }
+
+        // Show selected tab
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.tab[onclick="showTab('${tabId}')"]`).classList.add('active');
+        }
+
+        // Dark mode toggle (matches hub functionality)
+        function checkDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                document.body.classList.add('dark-mode');
+            }
+        }
+        
+        // Search functionality
+        document.getElementById('param-search').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.param-card').forEach(card => {
+                const paramName = card.querySelector('h3').textContent.toLowerCase();
+                if (paramName.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // Comparison mode
+        function toggleComparison() {
+            const comparisonMode = document.querySelector('.comparison-mode');
+            comparisonMode.style.display = comparisonMode.style.display === 'block' ? 'none' : 'block';
+            
+            if (comparisonMode.style.display === 'block') {
+                updateComparison();
+            }
+        }
+        
+        function updateComparison() {
+            const marineCol = document.getElementById('marine-comparison');
+            const freshCol = document.getElementById('freshwater-comparison');
+            
+            // Clear existing content
+            marineCol.innerHTML = '<h4><i class="fas fa-water"></i> Marine Values</h4>';
+            freshCol.innerHTML = '<h4><i class="fas fa-tint"></i> Freshwater Values</h4>';
+            
+            // Add parameters to each column
+            document.querySelectorAll('.param-card').forEach(card => {
+                const paramName = card.querySelector('h3').textContent;
+                const marineValue = card.querySelector('.value-range.ideal:nth-child(2)')?.textContent || 'N/A';
+                const freshValue = card.querySelector('.value-range.ideal:first-child')?.textContent || 'N/A';
+                
+                if (marineValue !== 'N/A') {
+                    const marineItem = document.createElement('div');
+                    marineItem.className = 'param-card';
+                    marineItem.innerHTML = `<h4>${paramName}</h4><p>${marineValue}</p>`;
+                    marineCol.appendChild(marineItem);
+                }
+                
+                if (freshValue !== 'N/A') {
+                    const freshItem = document.createElement('div');
+                    freshItem.className = 'param-card';
+                    freshItem.innerHTML = `<h4>${paramName}</h4><p>${freshValue}</p>`;
+                    freshCol.appendChild(freshItem);
+                }
+            });
+        }
+        
+        // Initialize
+        window.onload = function() {
+            checkDarkMode();
+            
+            // Close all parameter details by default
+            document.querySelectorAll('.param-details').forEach(details => {
+                details.style.display = 'none';
+            });
+        };
+    </script>
+</body>
+</html>
