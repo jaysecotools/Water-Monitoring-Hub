@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Australian Freshwater Quality Monitoring Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.13/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #e0f7fa;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        .dark-mode {
+            background-color: #002b36;
+            color: #e0f7fa;
+        }
+        .banner {
+            background-color: #006064;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        .instructions {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #b2ebf2;
+            border: 1px solid #006064;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .instructions {
+            background-color: #004d40;
+            border: 1px solid #b2ebf2;
+        }
+        .slider-group {
+            margin-bottom: 20px;
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #81c784;
+        }
+        .dark-mode .slider-group {
+            background-color: #1b5e20;
+            border: 1px solid #4c8c4a;
+        }
+        .slider-label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+        .slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .output {
+            font-weight: bold;
+            color: #006064;
+        }
+        .dark-mode .output {
+            color: #4dd0e1;
+        }
+        .checkbox-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            border: 1px solid #81c784;
+        }
+        .dark-mode .checkbox-group {
+            background-color: #1b5e20;
+            border: 1px solid #4c8c4a;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #006064;
+        }
+        .dark-mode .footer {
+            color: #4dd0e1;
+        }
+        #dark-mode-toggle {
+            margin: 20px auto;
+            display: block;
+            padding: 8px 25px;
+            font-size: 16px;
+            background-color: #006064;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        #dark-mode-toggle:hover {
+            background-color: #00838f;
+        }
+        .dark-mode #dark-mode-toggle {
+            background-color: #4dd0e1;
+            color: #002b36;
+        }
+        .info-button {
+            background-color: #006064;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            padding: 2px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 12px;
+            width: 18px;
+            height: 18px;
+            line-height: 14px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .info-button:hover {
+            background-color: #00838f;
+        }
+        .dark-mode .info-button {
+            background-color: #4dd0e1;
+            color: #002b36;
+        }
+        .criteria-display {
+            font-size: 14px;
+            color: #006064;
+            margin-top: 5px;
+            padding: 8px;
+            background-color: #e0f7fa;
+            border-radius: 4px;
+        }
+        .dark-mode .criteria-display {
+            color: #e0f7fa;
+            background-color: #004d40;
+        }
+        .assessment {
+            background-color: #e8f5e9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #81c784;
+        }
+        .dark-mode .assessment {
+            background-color: #1b5e20;
+            border: 1px solid #4c8c4a;
+        }
+        button {
+            padding: 8px 15px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            background-color: #006064;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background-color: #00838f;
+        }
+        .dark-mode button {
+            background-color: #4dd0e1;
+            color: #002b36;
+        }
+        .btn-danger {
+            background-color: #c62828;
+        }
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        .dark-mode .btn-danger {
+            background-color: #d32f2f;
+        }
+        .btn-secondary {
+            background-color: #546e7a;
+        }
+        .btn-secondary:hover {
+            background-color: #607d8b;
+        }
+        .dark-mode .btn-secondary {
+            background-color: #607d8b;
+        }
+        .location-selector {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            border: 1px solid #81c784;
+        }
+        .dark-mode .location-selector {
+            background-color: #1b5e20;
+            border: 1px solid #4c8c4a;
+        }
+        select, input[type="text"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #81c784;
+            margin-bottom: 10px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .dark-mode select, .dark-mode input[type="text"] {
+            background-color: #004d40;
+            color: #e0f7fa;
+            border: 1px solid #4c8c4a;
+        }
+        .disclaimer {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e0f7fa;
+            border: 1px solid #006064;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #555;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .dark-mode .disclaimer {
+            background-color: #004d40;
+            border: 1px solid #b2ebf2;
+            color: #e0f7fa;
+        }
+        .parameter-unit {
+            font-size: 0.9em;
+            color: #006064;
+            margin-left: 5px;
+        }
+        .dark-mode .parameter-unit {
+            color: #4dd0e1;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px;
+            }
+            .banner {
+                font-size: 18px;
+                padding: 10px;
+            }
+            .instructions, .checkbox-group, .slider-group {
+                font-size: 14px;
+                padding: 10px;
+            }
+            .slider-label, .output {
+                display: block;
+                margin-bottom: 10px;
+            }
+            canvas {
+                width: 100% !important;
+                height: auto !important;
+            }
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        <h1>Australian Freshwater Quality Monitoring Tool</h1>
+        <p>For use in dams, creeks, rivers and wetlands</p>
+    </div>
+    <div class="container">
+        <button id="dark-mode-toggle">Toggle Dark Mode</button>
+        
+        <div class="instructions">
+            <h2>Instructions</h2>
+            <ol>
+                <li>Select your location type and climate zone to get region-specific recommendations.</li>
+                <li>Choose the water quality parameters you want to include in the assessment.</li>
+                <li>Hover over each parameter for a brief description (click the information icon on mobile).</li>
+                <li>Adjust the sliders to reflect the current state of each parameter (0 is worst, 5 is best).</li>
+                <li>The overall water quality score will be calculated based on the selected parameters and their values.</li>
+                <li>A visual representation of the water quality is provided in the radar chart below.</li>
+                <li>Save your assessments for future reference or export them as PDF reports.</li>
+            </ol>
+        </div>
+        
+        <div class="location-selector">
+            <h3>Location Information</h3>
+            <label for="location-type">Location Type:</label>
+            <select id="location-type">
+                <option value="urban">Urban waterway</option>
+                <option value="agricultural">Agricultural area</option>
+                <option value="natural">Natural area</option>
+                <option value="mining">Downstream from mining</option>
+                <option value="coastal">Coastal freshwater</option>
+                <option value="alpine">Alpine waterway</option>
+            </select>
+            
+            <label for="climate-zone">Climate Zone:</label>
+            <select id="climate-zone">
+                <option value="tropical">Tropical (NT, QLD north)</option>
+                <option value="subtropical">Subtropical (QLD coastal, NSW north coast)</option>
+                <option value="arid">Arid (Central Australia)</option>
+                <option value="temperate">Temperate (NSW, VIC, TAS, SA, WA south)</option>
+                <option value="alpine">Alpine (Snowy Mountains, TAS highlands)</option>
+            </select>
+            
+            <label for="location-name">Location Name (optional):</label>
+            <input type="text" id="location-name" placeholder="e.g., Murray River, Sydney Dam">
+        </div>
+        
+        <div class="checkbox-group">
+            <h3>Select Parameters to Monitor</h3>
+            <label title="Water temperature affects metabolism and survival of aquatic organisms">
+                <input type="checkbox" class="component-checkbox" checked value="Temperature"> Temperature
+                <span class="parameter-unit">(°C)</span>
+                <button class="info-button" data-description="Water temperature affects metabolism and survival of aquatic organisms. Measured in degrees Celsius (°C).">i</button>
+            </label><br>
+            <label title="Measures acidity/alkalinity affecting chemical processes">
+                <input type="checkbox" class="component-checkbox" checked value="pH Level"> pH Level
+                <span class="parameter-unit">(pH units)</span>
+                <button class="info-button" data-description="pH measures how acidic or alkaline the water is on a scale from 0 (acidic) to 14 (alkaline), with 7 being neutral. Aquatic life is sensitive to pH changes.">i</button>
+            </label><br>
+            <label title="Essential for aquatic respiration and ecosystem health">
+                <input type="checkbox" class="component-checkbox" checked value="Dissolved Oxygen"> Dissolved Oxygen
+                <span class="parameter-unit">(mg/L)</span>
+                <button class="info-button" data-description="The amount of oxygen available to aquatic organisms, measured in milligrams per liter (mg/L). Critical for aquatic life survival.">i</button>
+            </label><br>
+            <label title="Indicates dissolved ion concentration in water">
+                <input type="checkbox" class="component-checkbox" checked value="Conductivity"> Conductivity
+                <span class="parameter-unit">(µS/cm)</span>
+                <button class="info-button" data-description="Indicates the water's ability to conduct electrical current, which relates to dissolved ion concentration. Measured in microsiemens per centimeter (µS/cm).">i</button>
+            </label><br>
+            <label title="Measures all dissolved substances in water">
+                <input type="checkbox" class="component-checkbox" checked value="Total Dissolved Solids"> Total Dissolved Solids
+                <span class="parameter-unit">(mg/L)</span>
+                <button class="info-button" data-description="The total amount of mobile charged ions in water, including minerals, salts and metals. Measured in milligrams per liter (mg/L).">i</button>
+            </label><br>
+            <label title="Measures water clarity affected by suspended particles">
+                <input type="checkbox" class="component-checkbox" checked value="Turbidity"> Turbidity
+                <span class="parameter-unit">(NTU)</span>
+                <button class="info-button" data-description="Measures water clarity by quantifying light scattering by suspended particles. Measured in Nephelometric Turbidity Units (NTU).">i</button>
+            </label><br>
+            <label title="Indicates water's ability to break down contaminants">
+                <input type="checkbox" class="component-checkbox" checked value="Oxidation Reduction Potential"> Oxidation Reduction Potential
+                <span class="parameter-unit">(mV)</span>
+                <button class="info-button" data-description="Indicates the tendency of a chemical species to acquire electrons (be reduced). Measured in millivolts (mV).">i</button>
+            </label><br>
+            <label title="Nutrient that can cause algal blooms if excessive">
+                <input type="checkbox" class="component-checkbox" value="Phosphate Levels"> Phosphate Levels
+                <span class="parameter-unit">(mg/L as P)</span>
+                <button class="info-button" data-description="A form of phosphorus that can contribute to algal blooms. Measured in milligrams per liter (mg/L).">i</button>
+            </label><br>
+            <label title="Nutrient that can be toxic at high levels">
+                <input type="checkbox" class="component-checkbox" value="Nitrate Levels"> Nitrate Levels
+                <span class="parameter-unit">(mg/L as N)</span>
+                <button class="info-button" data-description="A form of nitrogen that can lead to algal blooms at high concentrations. Measured in milligrams per liter (mg/L).">i</button>
+            </label><br>
+            <label title="Toxic nitrogen compound harmful to aquatic life">
+                <input type="checkbox" class="component-checkbox" value="Nitrite Levels"> Nitrite Levels
+                <span class="parameter-unit">(mg/L as N)</span>
+                <button class="info-button" data-description="A toxic form of nitrogen that can be harmful to aquatic life, especially fish. Measured in milligrams per liter (mg/L).">i</button>
+            </label><br>
+            <label title="Measures algal biomass in water">
+                <input type="checkbox" class="component-checkbox" value="Chlorophyll-a"> Chlorophyll-a
+                <span class="parameter-unit">(µg/L)</span>
+                <button class="info-button" data-description="A measure of phytoplankton biomass and primary productivity. Measured in micrograms per liter (µg/L).">i</button>
+            </label><br>
+            <label title="Toxic nitrogen compound harmful to aquatic life">
+                <input type="checkbox" class="component-checkbox" value="Ammonia"> Ammonia
+                <span class="parameter-unit">(mg/L as N)</span>
+                <button class="info-button" data-description="A nitrogen compound that can be toxic to aquatic life at elevated concentrations. Measured in milligrams per liter (mg/L).">i</button>
+            </label>
+        </div>
+        
+        <div id="sliders-container"></div>
+        
+        <div style="margin: 20px 0;">
+            <canvas id="radarChart"></canvas>
+        </div>
+        
+        <div>
+            <p><strong>Overall Water Quality Score:</strong> <span id="overall-score">0</span>%</p>
+            <h3>Recommendations</h3>
+            <p id="recommendations"></p>
+        </div>
+        
+        <div id="download-buttons">
+            <button id="download-pdf-button">Download PDF Report</button>
+            <button id="save-assessment-button">Save Assessment</button>
+            <button id="clear-all-assessments-button" class="btn-danger">Clear All Assessments</button>
+        </div>
+        
+        <div id="assessments-container">
+            <h3>Saved Assessments</h3>
+        </div>
+        
+        <div class="disclaimer">
+            <h4>Disclaimer</h4>
+            <p>This Australian Freshwater Quality Monitoring Tool is designed for educational and informational purposes only. The assessments and recommendations provided are based on general water quality guidelines for Australian freshwater environments and should not be considered as professional environmental advice. Actual water quality standards may vary by specific location and regulatory requirements. Users are encouraged to consult with freshwater scientists or environmental experts for detailed analysis and decision-making. The developers are not liable for any actions taken based on the results generated by this tool.</p>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Developed for Australian Freshwater Environments © 2025
+    </div>
+
+    <script>
+        // Enhanced temperature criteria for Australian conditions
+        const temperatureCriteria = {
+            tropical: [
+                "Very Poor: >35°C or <18°C, unsuitable for most tropical species",
+                "Poor: 32-35°C or 18-20°C, stressful for many tropical species",
+                "Fair: 28-32°C or 20-22°C, within tolerance range but not optimal",
+                "Good: 24-28°C, suitable for most tropical species",
+                "Very Good: 22-24°C, optimal for many tropical ecosystems",
+                "Excellent: 24-26°C, ideal for thriving tropical aquatic life"
+            ],
+            subtropical: [
+                "Very Poor: >32°C or <12°C, unsuitable for most subtropical species",
+                "Poor: 28-32°C or 12-15°C, stressful for many subtropical species",
+                "Fair: 24-28°C or 15-18°C, within tolerance range but not optimal",
+                "Good: 20-24°C, suitable for most subtropical species",
+                "Very Good: 18-20°C, optimal for many subtropical ecosystems",
+                "Excellent: 20-22°C, ideal for thriving subtropical aquatic life"
+            ],
+            arid: [
+                "Very Poor: >38°C or <10°C, unsuitable for most arid zone species",
+                "Poor: 32-38°C or 10-15°C, stressful for many arid zone species",
+                "Fair: 26-32°C or 15-18°C, within tolerance range but not optimal",
+                "Good: 20-26°C, suitable for most arid zone species",
+                "Very Good: 18-20°C, optimal for many arid zone ecosystems",
+                "Excellent: 22-24°C, ideal for thriving arid zone aquatic life"
+            ],
+            temperate: [
+                "Very Poor: >30°C or <5°C, unsuitable for most temperate species",
+                "Poor: 25-30°C or 5-10°C, stressful for many temperate species",
+                "Fair: 20-25°C or 10-12°C, within tolerance range but not optimal",
+                "Good: 15-20°C, suitable for most temperate species",
+                "Very Good: 12-15°C, optimal for many temperate ecosystems",
+                "Excellent: 16-18°C, ideal for thriving temperate aquatic life"
+            ],
+            alpine: [
+                "Very Poor: >22°C or <0°C, unsuitable for most alpine species",
+                "Poor: 18-22°C or 0-2°C, stressful for many alpine species",
+                "Fair: 14-18°C or 2-4°C, within tolerance range but not optimal",
+                "Good: 8-14°C, suitable for most alpine species",
+                "Very Good: 4-8°C, optimal for many alpine ecosystems",
+                "Excellent: 6-10°C, ideal for thriving alpine aquatic life"
+            ]
+        };
+
+        const freshwaterComponents = [
+            {
+                name: "Temperature",
+                value: 3,
+                description: "Water temperature affects metabolism and survival of aquatic organisms",
+                criteria: temperatureCriteria.temperate,
+                unit: "°C"
+            },
+            {
+                name: "pH Level",
+                value: 3,
+                description: "Measures acidity/alkalinity affecting chemical processes",
+                criteria: [
+                    "Very Poor: <4 or >10, unsuitable for most aquatic life",
+                    "Poor: 4-5.5 or 8.5-10, stressful for aquatic organisms",
+                    "Fair: 5.5-6 or 8-8.5, some stress on aquatic life",
+                    "Good: 6-7 or 7-8, suitable for most aquatic organisms",
+                    "Very Good: 6.5-7.5, optimal for many aquatic ecosystems",
+                    "Excellent: 7-8, ideal for thriving aquatic life"
+                ],
+                unit: "pH units"
+            },
+            {
+                name: "Dissolved Oxygen",
+                value: 3,
+                description: "Essential for aquatic respiration and ecosystem health",
+                criteria: [
+                    "Very Poor: <2 mg/L, unsuitable for most aquatic life",
+                    "Poor: 2-4 mg/L, stressful for aquatic organisms",
+                    "Fair: 4-6 mg/L, some stress on aquatic life",
+                    "Good: 6-8 mg/L, suitable for most aquatic organisms",
+                    "Very Good: 8-10 mg/L, supporting healthy ecosystems",
+                    "Excellent: >10 mg/L, promoting thriving aquatic life"
+                ],
+                unit: "mg/L"
+            },
+            {
+                name: "Conductivity",
+                value: 3,
+                description: "Indicates dissolved ion concentration in water",
+                criteria: [
+                    "Very Poor: >1500 µS/cm, unsuitable for most freshwater life",
+                    "Poor: 1000-1500 µS/cm, stressful for freshwater organisms",
+                    "Fair: 500-1000 µS/cm, some stress on freshwater life",
+                    "Good: 200-500 µS/cm, suitable for most freshwater organisms",
+                    "Very Good: 100-200 µS/cm, optimal for many freshwater ecosystems",
+                    "Excellent: <100 µS/cm, ideal for pristine freshwater"
+                ],
+                unit: "µS/cm"
+            },
+            {
+                name: "Total Dissolved Solids",
+                value: 3,
+                description: "Measures all dissolved substances in water",
+                criteria: [
+                    "Very Poor: >1000 mg/L, unsuitable for most aquatic life",
+                    "Poor: 500-1000 mg/L, stressful for aquatic organisms",
+                    "Fair: 300-500 mg/L, some stress on aquatic life",
+                    "Good: 100-300 mg/L, suitable for most aquatic organisms",
+                    "Very Good: 50-100 mg/L, optimal for many aquatic ecosystems",
+                    "Excellent: <50 mg/L, ideal for pristine water"
+                ],
+                unit: "mg/L"
+            },
+            {
+                name: "Turbidity",
+                value: 3,
+                description: "Measures water clarity affected by suspended particles",
+                criteria: [
+                    "Very Poor: >100 NTU, extremely murky water",
+                    "Poor: 50-100 NTU, very cloudy water",
+                    "Fair: 25-50 NTU, somewhat clear water",
+                    "Good: 10-25 NTU, mostly clear water",
+                    "Very Good: 5-10 NTU, very clear water",
+                    "Excellent: <5 NTU, crystal clear water"
+                ],
+                unit: "NTU"
+            },
+            {
+                name: "Oxidation Reduction Potential",
+                value: 3,
+                description: "Indicates water's ability to break down contaminants",
+                criteria: [
+                    "Very Poor: <-200 mV or >+400 mV, unsuitable for most freshwater life",
+                    "Poor: -200 to -100 mV or +300 to +400 mV, stressful for organisms",
+                    "Fair: -100 to -50 mV or +200 to +300 mV, some stress on life",
+                    "Good: -50 to +200 mV, suitable for most organisms",
+                    "Very Good: +100 to +200 mV, optimal for many ecosystems",
+                    "Excellent: +150 to +250 mV, ideal for thriving life"
+                ],
+                unit: "mV"
+            },
+            {
+                name: "Phosphate Levels",
+                value: 3,
+                description: "Nutrient that can cause algal blooms if excessive",
+                criteria: [
+                    "Very Poor: >0.1 mg/L, severe eutrophication likely",
+                    "Poor: 0.05-0.1 mg/L, high nutrient levels",
+                    "Fair: 0.02-0.05 mg/L, moderate nutrient levels",
+                    "Good: 0.01-0.02 mg/L, low nutrient levels",
+                    "Very Good: 0.005-0.01 mg/L, very low nutrient levels",
+                    "Excellent: <0.005 mg/L, pristine conditions"
+                ],
+                unit: "mg/L as P"
+            },
+            {
+                name: "Nitrate Levels",
+                value: 3,
+                description: "Nutrient that can be toxic at high levels",
+                criteria: [
+                    "Very Poor: >10 mg/L, unsuitable for most aquatic life",
+                    "Poor: 5-10 mg/L, stressful for aquatic organisms",
+                    "Fair: 2-5 mg/L, some stress on aquatic life",
+                    "Good: 1-2 mg/L, suitable for most aquatic organisms",
+                    "Very Good: 0.5-1 mg/L, optimal for many aquatic ecosystems",
+                    "Excellent: <0.5 mg/L, ideal for thriving aquatic life"
+                ],
+                unit: "mg/L as N"
+            },
+            {
+                name: "Nitrite Levels",
+                value: 3,
+                description: "Toxic nitrogen compound harmful to aquatic life",
+                criteria: [
+                    "Very Poor: >1 mg/L, highly toxic to aquatic life",
+                    "Poor: 0.5-1 mg/L, stressful for aquatic organisms",
+                    "Fair: 0.2-0.5 mg/L, some stress on aquatic life",
+                    "Good: 0.1-0.2 mg/L, suitable for most aquatic organisms",
+                    "Very Good: 0.05-0.1 mg/L, optimal for many aquatic ecosystems",
+                    "Excellent: <0.05 mg/L, ideal for thriving aquatic life"
+                ],
+                unit: "mg/L as N"
+            },
+            {
+                name: "Chlorophyll-a",
+                value: 3,
+                description: "Measures algal biomass in water",
+                criteria: [
+                    "Very Poor: >50 µg/L, severe algal bloom likely",
+                    "Poor: 20-50 µg/L, high algal concentration",
+                    "Fair: 10-20 µg/L, moderate algal presence",
+                    "Good: 5-10 µg/L, low algal presence",
+                    "Very Good: 2-5 µg/L, minimal algal presence",
+                    "Excellent: <2 µg/L, very clean water"
+                ],
+                unit: "µg/L"
+            },
+            {
+                name: "Ammonia",
+                value: 3,
+                description: "Toxic nitrogen compound harmful to aquatic life",
+                criteria: [
+                    "Very Poor: >2.0 mg/L, highly toxic",
+                    "Poor: 1.0-2.0 mg/L, toxic to many species",
+                    "Fair: 0.5-1.0 mg/L, stressful for some species",
+                    "Good: 0.1-0.5 mg/L, acceptable for most species",
+                    "Very Good: 0.05-0.1 mg/L, good quality",
+                    "Excellent: <0.05 mg/L, ideal conditions"
+                ],
+                unit: "mg/L as N"
+            }
+        ];
+
+        // DOM elements
+        const slidersContainer = document.getElementById('sliders-container');
+        const radarChartCanvas = document.getElementById('radarChart');
+        const overallScoreElement = document.getElementById('overall-score');
+        const recommendationsElement = document.getElementById('recommendations');
+        const componentCheckboxes = document.querySelectorAll('.component-checkbox');
+        const infoButtons = document.querySelectorAll('.info-button');
+        const locationTypeSelect = document.getElementById('location-type');
+        const climateZoneSelect = document.getElementById('climate-zone');
+        const locationNameInput = document.getElementById('location-name');
+
+        let activeComponents = freshwaterComponents.filter((_, i) => componentCheckboxes[i].checked);
+        let radarChart;
+
+        // Initialize the tool
+        function initTool() {
+            renderSliders();
+            createRadarChart();
+            updateChart();
+            
+            // Add event listeners
+            document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+            document.getElementById('download-pdf-button').addEventListener('click', downloadPDF);
+            document.getElementById('save-assessment-button').addEventListener('click', saveAssessment);
+            document.getElementById('clear-all-assessments-button').addEventListener('click', clearAllAssessments);
+            
+            componentCheckboxes.forEach((checkbox, index) => {
+                checkbox.addEventListener('change', () => {
+                    activeComponents = freshwaterComponents.filter((_, i) => componentCheckboxes[i].checked);
+                    renderSliders();
+                    updateChart();
+                });
+            });
+
+            infoButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const description = e.target.dataset.description;
+                    alert(description);
+                });
+            });
+
+            locationTypeSelect.addEventListener('change', updateCriteria);
+            climateZoneSelect.addEventListener('change', updateCriteria);
+            
+            displayAssessments();
+        }
+
+        // Render sliders for active components
+        function renderSliders() {
+            slidersContainer.innerHTML = '';
+            activeComponents.forEach((component, index) => {
+                const sliderGroup = document.createElement('div');
+                sliderGroup.className = 'slider-group';
+                
+                const label = document.createElement('div');
+                label.className = 'slider-label';
+                label.innerHTML = `
+                    <span>${component.name} <span class="parameter-unit">(${component.unit})</span></span>
+                    <span class="output">Rating: ${component.value}/5</span>
+                `;
+                sliderGroup.appendChild(label);
+                
+                const slider = document.createElement('input');
+                slider.type = 'range';
+                slider.min = 0;
+                slider.max = 5;
+                slider.value = component.value;
+                slider.dataset.index = index;
+                slider.className = 'slider';
+                slider.addEventListener('input', handleSliderChange);
+                sliderGroup.appendChild(slider);
+                
+                const criteriaDisplay = document.createElement('div');
+                criteriaDisplay.className = 'criteria-display';
+                criteriaDisplay.textContent = getCriteriaText(component, component.value);
+                sliderGroup.appendChild(criteriaDisplay);
+                
+                slidersContainer.appendChild(sliderGroup);
+            });
+        }
+
+        // Handle slider changes
+        function handleSliderChange(e) {
+            const index = parseInt(e.target.dataset.index, 10);
+            const newValue = parseInt(e.target.value, 10);
+            activeComponents[index].value = newValue;
+            
+            // Update the displayed rating
+            const sliderGroup = e.target.parentElement;
+            const output = sliderGroup.querySelector('.output');
+            output.textContent = `Rating: ${newValue}/5`;
+            
+            // Update the criteria display
+            const criteriaDisplay = sliderGroup.querySelector('.criteria-display');
+            criteriaDisplay.textContent = getCriteriaText(activeComponents[index], newValue);
+            
+            updateChart();
+        }
+
+        // Get appropriate criteria text based on location and climate
+        function getCriteriaText(component, value) {
+            const climateZone = climateZoneSelect.value;
+            
+            // Check for temperature-specific criteria
+            if (component.name === "Temperature") {
+                return component.criteria[value];
+            }
+            
+            // Default to general criteria
+            return component.criteria[value];
+        }
+
+        // Create the radar chart
+        function createRadarChart() {
+            const ctx = radarChartCanvas.getContext('2d');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const colors = getChartColors(isDarkMode);
+            
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: activeComponents.map(comp => `${comp.name} (${comp.unit})`),
+                    datasets: [{
+                        label: 'Water Quality',
+                        data: activeComponents.map(comp => comp.value),
+                        backgroundColor: colors.backgroundColor,
+                        borderColor: colors.borderColor,
+                        borderWidth: 2,
+                        pointBackgroundColor: colors.borderColor,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: colors.borderColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: colors.angleLineColor
+                            },
+                            grid: {
+                                color: colors.gridColor
+                            },
+                            pointLabels: {
+                                color: colors.pointLabelColor,
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                color: colors.pointLabelColor,
+                                stepSize: 1,
+                                min: 0,
+                                max: 5
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const componentName = context.label.split(' (')[0];
+                                    const component = activeComponents.find(comp => comp.name === componentName);
+                                    return `${context.label}: ${context.raw}/5 - ${getCriteriaText(component, context.raw)}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update the chart when parameters change
+        function updateChart() {
+            if (!radarChart) return;
+            
+            radarChart.data.labels = activeComponents.map(comp => `${comp.name} (${comp.unit})`);
+            radarChart.data.datasets[0].data = activeComponents.map(comp => comp.value);
+            radarChart.update();
+            
+            const overallScore = calculateOverallScore();
+            overallScoreElement.textContent = overallScore;
+            
+            generateRecommendations();
+        }
+
+        // Update criteria when location or climate changes
+        function updateCriteria() {
+            if (!radarChart) return;
+            
+            // Update temperature criteria when climate zone changes
+            const zone = climateZoneSelect.value;
+            const tempComponent = activeComponents.find(c => c.name === "Temperature");
+            if (tempComponent) {
+                tempComponent.criteria = temperatureCriteria[zone];
+            }
+            
+            // Update all slider criteria displays
+            const sliderGroups = slidersContainer.querySelectorAll('.slider-group');
+            sliderGroups.forEach((group, index) => {
+                const slider = group.querySelector('.slider');
+                const value = parseInt(slider.value, 10);
+                const criteriaDisplay = group.querySelector('.criteria-display');
+                criteriaDisplay.textContent = getCriteriaText(activeComponents[index], value);
+            });
+            
+            generateRecommendations();
+        }
+
+        // Calculate overall water quality score
+        function calculateOverallScore() {
+            if (activeComponents.length === 0) return 0;
+            
+            const total = activeComponents.reduce((sum, comp) => sum + comp.value, 0);
+            const maxTotal = activeComponents.length * 5;
+            return Math.round((total / maxTotal) * 100);
+        }
+
+        // Generate recommendations based on current parameters
+        function generateRecommendations() {
+            const locationType = locationTypeSelect.value;
+            const climateZone = climateZoneSelect.value;
+            const locationName = locationNameInput.value || 'your location';
+            
+            let recommendations = '';
+            
+            // General recommendations based on overall score
+            const overallScore = calculateOverallScore();
+            
+            if (overallScore < 40) {
+                recommendations += `<p>The water quality at ${locationName} is <strong>poor</strong>. Immediate action is recommended to address the issues identified below.</p>`;
+            } else if (overallScore < 70) {
+                recommendations += `<p>The water quality at ${locationName} is <strong>fair</strong>. Some improvements are needed to enhance freshwater ecosystem health.</p>`;
+            } else {
+                recommendations += `<p>The water quality at ${locationName} is <strong>good</strong>. Continue monitoring to maintain these conditions.</p>`;
+            }
+            
+            // Specific recommendations for each parameter
+            recommendations += '<h4>Specific Recommendations:</h4><ul>';
+            
+            activeComponents.forEach(component => {
+                if (component.value <= 3) { // Only recommend for poor-performing parameters
+                    switch (component.name) {
+                        case "Temperature":
+                            recommendations += `<li><strong>Temperature:</strong> Manage water temperature through riparian vegetation to provide shade and reduce temperature fluctuations.`;
+                            if (locationType === 'urban') recommendations += ` Consider reducing heat inputs from urban runoff.`;
+                            if (locationType === 'mining') recommendations += ` Monitor for thermal pollution from mining operations.`;
+                            recommendations += `</li>`;
+                            break;
+                        case "pH Level":
+                            recommendations += `<li><strong>pH Level:</strong> Address pH issues by investigating sources of acidity/alkalinity.`;
+                            if (locationType === 'mining') recommendations += ` Test for acid mine drainage and consider limestone treatment.`;
+                            if (locationType === 'agricultural') recommendations += ` Check for fertilizer or manure runoff impacts.`;
+                            recommendations += `</li>`;
+                            break;
+                        case "Dissolved Oxygen":
+                            recommendations += `<li><strong>Dissolved Oxygen:</strong> Improve oxygen levels by reducing organic matter inputs and increasing aeration.`;
+                            if (locationType === 'urban') recommendations += ` Address stormwater inputs that may carry organic pollutants.`;
+                            if (locationType === 'agricultural') recommendations += ` Manage livestock access to reduce organic inputs.`;
+                            recommendations += `</li>`;
+                            break;
+                        case "Conductivity":
+                            recommendations += `<li><strong>Conductivity:</strong> Investigate sources of elevated conductivity.`;
+                            if (locationType === 'urban') recommendations += ` Check for road runoff or industrial inputs.`;
+                            if (locationType === 'mining') recommendations += ` Test for mining-related salts and metals.`;
+                            if (locationType === 'coastal') recommendations += ` Monitor for saltwater intrusion.`;
+                            recommendations += `</li>`;
+                            break;
+                        case "Total Dissolved Solids":
+                            recommendations += `<li><strong>Total Dissolved Solids:</strong> Reduce TDS by controlling sediment and pollutant inputs.`;
+                            if (locationType === 'urban') recommendations += ` Implement stormwater management practices.`;
+                            if (locationType === 'agricultural') recommendations += ` Improve erosion control on farmland.`;
+                            recommendations += `</li>`;
+                            break;
+                        case "Turbidity":
+                            recommendations += `<li><strong>Turbidity:</strong> Address high turbidity through erosion control and riparian vegetation.`;
+                            if (locationType === 'urban') recommendations += ` Install sediment traps in stormwater systems.`;
+                            if (locationType === 'agricultural') recommendations += ` Establish vegetated buffer strips along waterways.`;
+                            if (locationType === 'mining') recommendations += ` Implement sediment control measures at mining sites.`;
+                            recommendations += `</li>`;
+                            break;
+                        case "Phosphate Levels":
+                        case "Nitrate Levels":
+                        case "Nitrite Levels":
+                        case "Ammonia":
+                            recommendations += `<li><strong>${component.name.split(' ')[0]}:</strong> Reduce nutrient inputs by managing sources.`;
+                            if (locationType === 'urban') recommendations += ` Reduce fertilizer use on lawns and gardens.`;
+                            if (locationType === 'agricultural') recommendations += ` Implement precision farming to reduce fertilizer runoff.`;
+                            if (locationType === 'natural') recommendations += ` Investigate natural nutrient sources or legacy impacts.`;
+                            recommendations += `</li>`;
+                            break;
+                        case "Chlorophyll-a":
+                            recommendations += `<li><strong>Chlorophyll-a:</strong> Control algal growth by reducing nutrient inputs`;
+                            if (climateZone === 'tropical' || climateZone === 'subtropical') recommendations += ` and considering biological controls like herbivorous fish.`;
+                            recommendations += `.</li>`;
+                            break;
+                        default:
+                            recommendations += `<li><strong>${component.name.split(' ')[0]}:</strong> Investigate sources impacting this parameter based on your location type.</li>`;
+                            break;
+                    }
+                }
+            });
+            
+            if (recommendations.endsWith('<ul>')) {
+                recommendations = recommendations.replace('<h4>Specific Recommendations:</h4><ul>', '');
+                recommendations += '<li>All monitored parameters are within acceptable ranges. Continue regular monitoring to maintain water quality.</li>';
+            }
+            
+            recommendations += '</ul>';
+            
+            // Add location-specific general recommendations
+            recommendations += '<h4>General Management Recommendations:</h4><ul>';
+            
+            switch (locationType) {
+                case 'urban':
+                    recommendations += `
+                        <li>Implement stormwater treatment measures such as wetlands or biofiltration systems</li>
+                        <li>Engage local community in monitoring and protecting urban waterways</li>
+                        <li>Reduce impervious surfaces to allow natural infiltration</li>
+                        <li>Control litter and debris entering waterways</li>
+                    `;
+                    break;
+                case 'agricultural':
+                    recommendations += `
+                        <li>Establish riparian buffers along waterways to filter runoff</li>
+                        <li>Implement sustainable farming practices to reduce chemical and sediment inputs</li>
+                        <li>Manage livestock access to waterways to prevent bank erosion</li>
+                        <li>Monitor for pesticide and herbicide contamination</li>
+                    `;
+                    break;
+                case 'mining':
+                    recommendations += `
+                        <li>Monitor for heavy metals and other mining-related contaminants</li>
+                        <li>Implement passive treatment systems if acid mine drainage is suspected</li>
+                        <li>Control sediment runoff from mining operations</li>
+                        <li>Revegetate disturbed areas to stabilize soils</li>
+                    `;
+                    break;
+                case 'natural':
+                    recommendations += `
+                        <li>Protect riparian vegetation to maintain natural water quality</li>
+                        <li>Monitor for invasive species that may impact water quality</li>
+                        <li>Minimize human disturbance in sensitive areas</li>
+                        <li>Preserve natural flow regimes</li>
+                    `;
+                    break;
+                case 'coastal':
+                    recommendations += `
+                        <li>Monitor for saltwater intrusion during dry periods</li>
+                        <li>Protect coastal freshwater wetlands that help filter water</li>
+                        <li>Manage groundwater extraction to maintain freshwater flows</li>
+                        <li>Control invasive species that may alter water chemistry</li>
+                    `;
+                    break;
+                case 'alpine':
+                    recommendations += `
+                        <li>Monitor for impacts from snowmelt and seasonal changes</li>
+                        <li>Protect alpine bogs and wetlands that regulate water flow</li>
+                        <li>Minimize disturbance to fragile alpine ecosystems</li>
+                        <li>Monitor for climate change impacts on water temperature</li>
+                    `;
+                    break;
+                default:
+                    recommendations += `
+                        <li>Implement regular water quality monitoring program</li>
+                        <li>Reduce pollutant inputs from catchment areas</li>
+                        <li>Protect and restore native riparian vegetation</li>
+                        <li>Educate community about freshwater conservation</li>
+                    `;
+            }
+            
+            recommendations += '</ul>';
+            
+            recommendationsElement.innerHTML = recommendations;
+        }
+
+        // Toggle dark mode
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            updateChartColors(isDarkMode);
+        }
+
+        // Update chart colors for dark/light mode
+        function updateChartColors(isDarkMode) {
+            if (!radarChart) return;
+            
+            const colors = getChartColors(isDarkMode);
+            
+            radarChart.options.scales.r.angleLines.color = colors.angleLineColor;
+            radarChart.options.scales.r.grid.color = colors.gridColor;
+            radarChart.options.scales.r.pointLabels.color = colors.pointLabelColor;
+            radarChart.options.scales.r.ticks.color = colors.pointLabelColor;
+            radarChart.data.datasets[0].backgroundColor = colors.backgroundColor;
+            radarChart.data.datasets[0].borderColor = colors.borderColor;
+            radarChart.data.datasets[0].pointBackgroundColor = colors.borderColor;
+            
+            radarChart.update();
+        }
+
+        // Get appropriate chart colors for current mode
+        function getChartColors(isDarkMode) {
+            return isDarkMode ? {
+                backgroundColor: 'rgba(0, 150, 136, 0.2)', // Teal with opacity
+                borderColor: 'rgba(0, 150, 136, 1)', // Teal
+                gridColor: 'rgba(224, 247, 250, 0.2)', // Light cyan
+                angleLineColor: 'rgba(224, 247, 250, 0.2)', // Light cyan
+                pointLabelColor: 'rgba(224, 247, 250, 1)' // Light cyan
+            } : {
+                backgroundColor: 'rgba(0, 96, 100, 0.2)', // Dark cyan with opacity
+                borderColor: 'rgba(0, 96, 100, 1)', // Dark cyan
+                gridColor: 'rgba(0, 43, 54, 0.1)', // Dark blue
+                angleLineColor: 'rgba(0, 43, 54, 0.1)', // Dark blue
+                pointLabelColor: 'rgba(0, 43, 54, 1)' // Dark blue
+            };
+        }
+
+        // Download PDF report
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            const locationType = locationTypeSelect.options[locationTypeSelect.selectedIndex].text;
+            const climateZone = climateZoneSelect.options[climateZoneSelect.selectedIndex].text;
+            const locationName = locationNameInput.value || 'Unspecified Location';
+            const currentDate = new Date().toLocaleString();
+            const overallScore = calculateOverallScore();
+            
+            // Set PDF styling
+            doc.setFont('helvetica');
+            doc.setTextColor(isDarkMode ? 50 : 0);
+            
+            // Add title and metadata
+            doc.setFontSize(18);
+            doc.text('Australian Freshwater Quality Report', 105, 15, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text(`Location: ${locationName}`, 14, 25);
+            doc.text(`Location Type: ${locationType}`, 14, 30);
+            doc.text(`Climate Zone: ${climateZone}`, 14, 35);
+            doc.text(`Assessment Date: ${currentDate}`, 14, 40);
+            doc.text(`Overall Water Quality Score: ${overallScore}%`, 14, 45);
+            
+            // Add radar chart image
+            if (radarChartCanvas) {
+                const chartImage = radarChartCanvas.toDataURL('image/png');
+                doc.addImage(chartImage, 'PNG', 30, 55, 150, 150);
+            }
+            
+            // Add parameter ratings table
+            doc.setFontSize(14);
+            doc.text('Parameter Ratings:', 14, 210);
+            
+            const ratingsData = activeComponents.map(comp => [
+                `${comp.name} (${comp.unit})`,
+                `${comp.value}/5`,
+                getCriteriaText(comp, comp.value)
+            ]);
+            
+            doc.autoTable({
+                startY: 215,
+                head: [['Parameter', 'Rating', 'Description']],
+                body: ratingsData,
+                theme: 'grid',
+                headStyles: {
+                    fillColor: [0, 96, 100], // Dark cyan
+                    textColor: 255
+                },
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 3,
+                    overflow: 'linebreak'
+                },
+                columnStyles: {
+                    0: { cellWidth: 50 },
+                    1: { cellWidth: 20 },
+                    2: { cellWidth: 'auto' }
+                }
+            });
+            
+            // Add recommendations
+            doc.setFontSize(14);
+            doc.text('Recommendations:', 14, doc.lastAutoTable.finalY + 10);
+            
+            const recommendations = recommendationsElement.innerHTML;
+            const recommendationsList = recommendations.match(/<li>(.*?)<\/li>/g)?.map(item => 
+                item.replace(/<\/?li>/g, '').replace(/<strong>|<\/strong>/g, '')
+            ) || ['No specific recommendations at this time.'];
+            
+            doc.setFontSize(11);
+            recommendationsList.forEach((rec, i) => {
+                doc.text(`• ${rec}`, 16, doc.lastAutoTable.finalY + 20 + (i * 7), { maxWidth: 180 });
+            });
+            
+            // Add footer
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text('Generated by Australian Freshwater Quality Monitoring Tool', 105, 285, { align: 'center' });
+            
+            // Save PDF
+            const pdfName = prompt("Enter a name for the PDF report:", `freshwater_quality_report_${locationName.replace(/\s+/g, '_')}`);
+            if (pdfName) {
+                doc.save(`${pdfName}.pdf`);
+            }
+        }
+
+        // Save current assessment
+        function saveAssessment() {
+            const assessmentName = prompt("Enter a name for this assessment:", `Assessment ${new Date().toLocaleDateString()}`);
+            if (!assessmentName) return;
+            
+            const assessment = {
+                name: assessmentName,
+                date: new Date().toISOString(),
+                locationType: locationTypeSelect.value,
+                climateZone: climateZoneSelect.value,
+                locationName: locationNameInput.value || '',
+                components: activeComponents.map(comp => ({
+                    name: comp.name,
+                    unit: comp.unit,
+                    value: comp.value,
+                    criteria: getCriteriaText(comp, comp.value)
+                })),
+                overallScore: calculateOverallScore()
+            };
+            
+            let assessments = JSON.parse(localStorage.getItem('freshwaterAssessments')) || [];
+            assessments.push(assessment);
+            localStorage.setItem('freshwaterAssessments', JSON.stringify(assessments));
+            
+            alert('Assessment saved successfully!');
+            displayAssessments();
+        }
+
+        // Display saved assessments
+        function displayAssessments() {
+            const assessments = JSON.parse(localStorage.getItem('freshwaterAssessments')) || [];
+            const container = document.getElementById('assessments-container');
+            
+            // Clear previous assessments
+            while (container.children.length > 1) {
+                container.removeChild(container.lastChild);
+            }
+            
+            if (assessments.length === 0) {
+                container.innerHTML += '<p>No saved assessments found.</p>';
+                return;
+            }
+            
+            // Sort assessments by date (newest first)
+            assessments.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            assessments.forEach((assessment, index) => {
+                const assessmentDiv = document.createElement('div');
+                assessmentDiv.className = 'assessment';
+                
+                const date = new Date(assessment.date).toLocaleString();
+                const locationInfo = assessment.locationName ? 
+                    `${assessment.locationName} (${assessment.locationType}, ${assessment.climateZone})` :
+                    `${assessment.locationType}, ${assessment.climateZone}`;
+                
+                assessmentDiv.innerHTML = `
+                    <h4>${assessment.name}</h4>
+                    <p><strong>Date:</strong> ${date}</p>
+                    <p><strong>Location:</strong> ${locationInfo}</p>
+                    <p><strong>Overall Score:</strong> ${assessment.overallScore}%</p>
+                    <h5>Parameters:</h5>
+                    <ul>
+                        ${assessment.components.map(comp => 
+                            `<li><strong>${comp.name} (${comp.unit}):</strong> ${comp.value}/5 - ${comp.criteria}</li>`
+                        ).join('')}
+                    </ul>
+                `;
+                
+                const buttonGroup = document.createElement('div');
+                buttonGroup.style.marginTop = '10px';
+                
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Delete';
+                deleteButton.className = 'btn-danger';
+                deleteButton.onclick = () => deleteAssessment(index);
+                buttonGroup.appendChild(deleteButton);
+                
+                const exportButton = document.createElement('button');
+                exportButton.textContent = 'Export';
+                exportButton.className = 'btn-secondary';
+                exportButton.onclick = () => exportAssessment(assessment);
+                buttonGroup.appendChild(exportButton);
+                
+                assessmentDiv.appendChild(buttonGroup);
+                container.appendChild(assessmentDiv);
+            });
+        }
+
+        // Delete an assessment
+        function deleteAssessment(index) {
+            if (!confirm('Are you sure you want to delete this assessment?')) return;
+            
+            let assessments = JSON.parse(localStorage.getItem('freshwaterAssessments')) || [];
+            assessments.splice(index, 1);
+            localStorage.setItem('freshwaterAssessments', JSON.stringify(assessments));
+            
+            displayAssessments();
+        }
+
+        // Clear all assessments
+        function clearAllAssessments() {
+            if (!confirm('Are you sure you want to delete ALL saved assessments? This cannot be undone.')) return;
+            
+            localStorage.removeItem('freshwaterAssessments');
+            displayAssessments();
+        }
+
+        // Export single assessment as CSV
+        function exportAssessment(assessment) {
+            const csvHeader = 'Parameter,Unit,Rating,Description\n';
+            const csvRows = assessment.components.map(comp => 
+                `"${comp.name}","${comp.unit}",${comp.value},"${comp.criteria.replace(/"/g, '""')}"`
+            ).join('\n');
+            
+            const csvContent = csvHeader + csvRows;
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `freshwater_assessment_${assessment.name.replace(/\s+/g, '_')}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize the tool when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initTool);
+    </script>
+</body>
+</html>
