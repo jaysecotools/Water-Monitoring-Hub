@@ -730,108 +730,130 @@
             return component.criteria[value];
         }
 
-        // Create the radar chart
-        function createRadarChart() {
-            const ctx = radarChartCanvas.getContext('2d');
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const colors = getChartColors(isDarkMode);
-            
-            radarChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: activeComponents.map(comp => `${comp.name} (${comp.unit})`),
-                    datasets: [{
-                        label: 'Water Quality',
-                        data: activeComponents.map(comp => comp.value),
-                        backgroundColor: colors.backgroundColor,
-                        borderColor: colors.borderColor,
-                        borderWidth: 2,
-                        pointBackgroundColor: colors.borderColor,
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: colors.borderColor
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    scales: {
-                        r: {
-                            angleLines: {
-                                color: colors.angleLineColor
-                            },
-                            grid: {
-                                color: colors.gridColor
-                            },
-                            pointLabels: {
-                                color: colors.pointLabelColor,
-                                font: {
-                                    size: 12
-                                }
-                            },
-                            ticks: {
-                                backdropColor: 'transparent',
-                                color: colors.pointLabelColor,
-                                stepSize: 1,
-                                min: 0,
-                                max: 5
-                            }
-                        }
+// Create the radar chart
+function createRadarChart() {
+    const ctx = radarChartCanvas.getContext('2d');
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const colors = getChartColors(isDarkMode);
+    
+    // Set a fixed size for the canvas to maintain aspect ratio
+    radarChartCanvas.width = 800;
+    radarChartCanvas.height = 600;
+    
+    radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: activeComponents.map(comp => `${comp.name} (${comp.unit})`),
+            datasets: [{
+                label: 'Water Quality',
+                data: activeComponents.map(comp => comp.value),
+                backgroundColor: colors.backgroundColor,
+                borderColor: colors.borderColor,
+                borderWidth: 2,
+                pointBackgroundColor: colors.borderColor,
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: colors.borderColor,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            aspectRatio: 1.5,
+            layout: {
+                padding: {
+                    top: 20,
+                    bottom: 20,
+                    left: 20,
+                    right: 20
+                }
+            },
+            scales: {
+                r: {
+                    angleLines: {
+                        color: colors.angleLineColor,
+                        lineWidth: 1
                     },
-                    plugins: {
-                        legend: {
-                            display: false
+                    grid: {
+                        color: colors.gridColor,
+                        circular: true
+                    },
+                    pointLabels: {
+                        color: colors.pointLabelColor,
+                        font: {
+                            size: 12,
+                            weight: 'bold'
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const componentName = context.label.split(' (')[0];
-                                    const component = activeComponents.find(comp => comp.name === componentName);
-                                    return `${context.label}: ${context.raw}/5 - ${getCriteriaText(component, context.raw)}`;
-                                }
-                            }
+                        padding: 15
+                    },
+                    ticks: {
+                        backdropColor: 'transparent',
+                        color: colors.pointLabelColor,
+                        stepSize: 1,
+                        min: 0,
+                        max: 5,
+                        z: 1,
+                        showLabelBackdrop: false
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 5
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const componentName = context.label.split(' (')[0];
+                            const component = activeComponents.find(comp => comp.name === componentName);
+                            return `${context.label}: ${context.raw}/5 - ${getCriteriaText(component, context.raw)}`;
                         }
                     }
                 }
-            });
-        }
-
-        // Update the chart when parameters change
-        function updateChart() {
-            if (!radarChart) return;
-            
-            radarChart.data.labels = activeComponents.map(comp => `${comp.name} (${comp.unit})`);
-            radarChart.data.datasets[0].data = activeComponents.map(comp => comp.value);
-            radarChart.update();
-            
-            const overallScore = calculateOverallScore();
-            overallScoreElement.textContent = overallScore;
-            
-            generateRecommendations();
-        }
-
-        // Update criteria when location or climate changes
-        function updateCriteria() {
-            if (!radarChart) return;
-            
-            // Update temperature criteria when climate zone changes
-            const zone = climateZoneSelect.value;
-            const tempComponent = activeComponents.find(c => c.name === "Temperature");
-            if (tempComponent) {
-                tempComponent.criteria = temperatureCriteria[zone];
+            },
+            elements: {
+                line: {
+                    tension: 0.1
+                }
             }
-            
-            // Update all slider criteria displays
-            const sliderGroups = slidersContainer.querySelectorAll('.slider-group');
-            sliderGroups.forEach((group, index) => {
-                const slider = group.querySelector('.slider');
-                const value = parseInt(slider.value, 10);
-                const criteriaDisplay = group.querySelector('.criteria-display');
-                criteriaDisplay.textContent = getCriteriaText(activeComponents[index], value);
-            });
-            
-            generateRecommendations();
         }
+    });
+}
+
+// Update the chart when parameters change
+function updateChart() {
+    if (!radarChart) return;
+    
+    // Update chart data
+    radarChart.data.labels = activeComponents.map(comp => `${comp.name} (${comp.unit})`);
+    radarChart.data.datasets[0].data = activeComponents.map(comp => comp.value);
+    
+    // Update chart colors if dark mode changed
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    const colors = getChartColors(isDarkMode);
+    
+    radarChart.data.datasets[0].backgroundColor = colors.backgroundColor;
+    radarChart.data.datasets[0].borderColor = colors.borderColor;
+    radarChart.data.datasets[0].pointBackgroundColor = colors.borderColor;
+    
+    radarChart.options.scales.r.angleLines.color = colors.angleLineColor;
+    radarChart.options.scales.r.grid.color = colors.gridColor;
+    radarChart.options.scales.r.pointLabels.color = colors.pointLabelColor;
+    radarChart.options.scales.r.ticks.color = colors.pointLabelColor;
+    
+    // Update the chart
+    radarChart.update();
+    
+    // Update score and recommendations
+    const overallScore = calculateOverallScore();
+    overallScoreElement.textContent = overallScore;
+    
+    generateRecommendations();
+}
 
         // Calculate overall water quality score
         function calculateOverallScore() {
